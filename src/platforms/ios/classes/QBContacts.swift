@@ -226,6 +226,46 @@ import Contacts
             }
         }
     }
+
+    @objc func contactById(
+        id: String,
+        unifyResults: Bool = false
+    ) -> CNContact? {
+        let request = CNContactFetchRequest(keysToFetch: self.keysToFetch())
+        request.unifyResults = unifyResults;
+        request.predicate = CNContact.predicateForContacts(withIdentifiers: [id]);
+        request.sortOrder = .givenName
+        var result : CNContact? = nil
+        do {
+            try self.store.enumerateContacts(with: request)
+            {(contact, status) -> Void in
+                result = contact;
+            }
+        } catch {
+            result = nil;
+        }
+        return result;
+    }
+
+    @objc func unifiedContactById(
+        id: String
+    ) -> CNContact? {
+        let keysToFetch = self.keysToFetch();
+        let predicate = CNContact.predicateForContacts(withIdentifiers: [id]);
+        let store = CNContactStore();
+        do {
+            let contacts = try store.unifiedContacts(
+                matching: predicate,
+                keysToFetch: keysToFetch
+            );
+            if (contacts.count == 1) {
+                return contacts.first;
+            }
+            return nil;
+        } catch {
+            return nil;
+        }
+    }
     
     @objc func unifiedContactById(id: String) -> CNContact? {
         let keysToFetch = self.keysToFetch();
