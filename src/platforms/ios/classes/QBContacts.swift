@@ -13,6 +13,7 @@ import Contacts
     
     let store = CNContactStore()
     var linkedContactsDiscovered = false;
+    var transactionOwner : String?;
     private var linkedContacts = [String: [CNContact]]()
     private var linkedUnifiedContact = [String: CNContact]();
     
